@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart Robot Q&A</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #071c2c, #123f52, #071c2c);
+  color: white;
+}
+
+.container {
+  width: 92%;
+  max-width: 600px;
+  padding: 25px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  text-align: center;
+}
+
+/* ROBOT */
+
+.robot {
+  width: 150px;
+  margin: auto;
+  animation: float 2s infinite ease-in-out;
+}
+
+@keyframes float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.antenna {
+  width: 5px;
+  height: 25px;
+  background: #00e5ff;
+  margin: auto;
+}
+
+.head {
+  width: 130px;
+  height: 100px;
+  margin: auto;
+  border: 4px solid #00e5ff;
+  border-radius: 25px;
+  background: #102b3a;
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+
+  box-shadow: 0 0 25px rgba(0,229,255,0.4);
+}
+
+.eye {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 15px #00e5ff;
+}
+
+.mouth {
+  position: absolute;
+  bottom: 15px;
+  width: 40px;
+  height: 5px;
+  background: #00e5ff;
+  border-radius: 10px;
+}
+
+.body {
+  width: 100px;
+  height: 70px;
+  margin: 5px auto;
+  border: 4px solid #00e5ff;
+  border-radius: 15px;
+  background: #102b3a;
+}
+
+h1 {
+  margin: 12px 0 5px;
+}
+
+.subtitle {
+  color: #b8e8f0;
+  margin-bottom: 20px;
+}
+
+/* CHAT */
+
+.chat {
+  height: 280px;
+  overflow-y: auto;
+  padding: 15px;
+  border-radius: 15px;
+  background: rgba(0,0,0,0.3);
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.message {
+  max-width: 85%;
+  padding: 11px 14px;
+  margin: 8px 0;
+  border-radius: 14px;
+  line-height: 1.4;
+}
+
+.robot-msg {
+  background: #07516a;
+  margin-right: auto;
+}
+
+.user-msg {
+  background: #087f6b;
+  margin-left: auto;
+  text-align: right;
+}
+
+/* INPUT */
+
+.input-area {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px;
+  border: none;
+  outline: none;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #00d9ff;
+  color: #00232c;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.clear {
+  margin-top: 12px;
+  background: #ff5252;
+  color: white;
+}
+
+/* MOBILE */
+
+@media (max-width: 500px) {
+  .container {
+    padding: 18px;
+  }
+
+  .input-area {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- ROBOT -->
+  <div class="robot">
+
+    <div class="antenna"></div>
+
+    <div class="head">
+      <div class="eye"></div>
+      <div class="eye"></div>
+      <div class="mouth"></div>
+    </div>
+
+    <div class="body"></div>
+
+  </div>
+
+  <h1>🤖 Smart Robot</h1>
+
+  <p class="subtitle">
+    Ask me a question
+  </p>
+
+  <!-- CHAT -->
+  <div class="chat" id="chat">
+
+    <div class="message robot-msg">
+      Hello! 👋<br>
+      I am your Smart Robot.<br>
+      Ask me a question!
+    </div>
+
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-area">
+
+    <input
+      id="question"
+      type="text"
+      placeholder="Type your question..."
+      autocomplete="off"
+    >
+
+    <button onclick="askQuestion()">
+      Ask 🤖
+    </button>
+
+  </div>
+
+  <button class="clear" onclick="clearChat()">
+    Clear Chat
+  </button>
+
+</div>
+
+<script>
+
+function askQuestion() {
+
+  let input = document.getElementById("question");
+  let chat = document.getElementById("chat");
+
+  let question = input.value.trim();
+
+  if (question === "") {
+    return;
+  }
+
+  /* USER MESSAGE */
+
+  let user = document.createElement("div");
+
+  user.className = "message user-msg";
+
+  user.textContent = question;
+
+  chat.appendChild(user);
+
+
+  /* ROBOT ANSWER */
+
+  let answer = getAnswer(question);
+
+  let robot = document.createElement("div");
+
+  robot.className = "message robot-msg";
+
+  robot.textContent = answer;
+
+  chat.appendChild(robot);
+
+
+  input.value = "";
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+
+function getAnswer(question) {
+
+  let q = question.toLowerCase().trim();
+
+
+  // GREETING
+
+  if (
+    q.includes("hello") ||
+    q.includes("hi") ||
+    q.includes("hey")
+  ) {
+    return "Hello! 👋 How can I help you?";
+  }
+
+
+  // NAME
+
+  if (
+    q.includes("your name") ||
+    q.includes("who are you")
+  ) {
+    return "I am Smart Robot 🤖.";
+  }
+
+
+  // HOW ARE YOU
+
+  if (q.includes("how are you")) {
+    return "I am great! 😊 Thanks for asking.";
+  }
+
+
+  // INDIA
+
+  if (
+    q.includes("capital of india") ||
+    q.includes("india capital")
+  ) {
+    return "The capital of India is New Delhi. 🇮🇳";
+  }
+
+
+  // PRIME MINISTER
+
+  if (
+    q.includes("prime minister of india")
+  ) {
+    return "The Prime Minister of India is Narendra Modi.";
+  }
+
+
+  // 2 + 2
+
+  if (
+    q.includes("2+2") ||
+    q.includes("2 + 2")
+  ) {
+    return "The correct answer is 4. ✅";
+  }
+
+
+  // 5 + 5
+
+  if (
+    q.includes("5+5") ||
+    q.includes("5 + 5")
+  ) {
+    return "The correct answer is 10. ✅";
+  }
+
+
+  // 10 + 10
+
+  if (
+    q.includes("10+10") ||
+    q.includes("10 + 10")
+  ) {
+    return "The correct answer is 20. ✅";
+  }
+
+
+  // LARGEST PLANET
+
+  if (
+    q.includes("largest planet")
+  ) {
+    return "Jupiter is the largest planet in our Solar System. 🪐";
+  }
+
+
+  // SMALLEST PLANET
+
+  if (
+    q.includes("smallest planet")
+  ) {
+    return "Mercury is the smallest planet in our Solar System.";
+  }
+
+
+  // CONTINENTS
+
+  if (
+    q.includes("7 continents") ||
+    q.includes("seven continents")
+  ) {
+    return "There are 7 continents: Asia, Africa, Europe, North America, South America, Australia and Antarctica.";
+  }
+
+
+  // OCEANS
+
+  if (
+    q.includes("5 oceans") ||
+    q.includes("five oceans")
+  ) {
+    return "The 5 oceans are Pacific, Atlantic, Indian, Southern and Arctic.";
+  }
+
+
+  // FASTEST ANIMAL
+
+  if (
+    q.includes("fastest animal")
+  ) {
+    return "The Peregrine Falcon is the fastest animal.";
+  }
+
+
+  // SUN
+
+  if (
+    q.includes("closest star") ||
+    q.includes("nearest star")
+  ) {
+    return "The Sun is the closest star to Earth. ☀️";
+  }
+
+
+  // EARTH
+
+  if (
+    q.includes("which planet do we live") ||
+    q.includes("planet do we live")
+  ) {
+    return "We live on planet Earth. 🌍";
+  }
+
+
+  // WATER
+
+  if (
+    q.includes("formula of water")
+  ) {
+    return "The chemical formula of water is H₂O.";
+  }
+
+
+  // BYE
+
+  if (
+    q.includes("bye") ||
+    q.includes("goodbye")
+  ) {
+    return "Goodbye! 👋 Have a great day!";
+  }
+
+
+  // DEFAULT
+
+  return "Sorry 🤔, I don't know that answer yet. Try another question.";
+}
+
+
+/* CLEAR CHAT */
+
+function clearChat() {
+
+  document.getElementById("chat").innerHTML = `
+
+    <div class="message robot-msg">
+      Chat cleared! 👋<br>
+      Ask me a new question.
+    </div>
+
+  `;
+}
+
+
+/* ENTER KEY */
+
+document
+.getElementById("question")
+.addEventListener("keydown", function(event) {
+
+  if (event.key === "Enter") {
+    askQuestion();
+  }
+
+});
+
+</script>
+
+</body>
+</html>
